@@ -1526,39 +1526,28 @@
   });
 
   // Use an adapter to check and color every country dynamically as it loads
-worldSeries.events.on("datavalidated", function() {
-  // Simple mapping dictionary for your visited locations
-  const iso2ToIso3 = {
-    "US": "USA", "GB": "GBR", "JP": "JPN", "MX": "MEX", "CO": "COL", "PE": "PER", "BZ": "BLZ",
-    "GT": "GTM", "DO": "DOM", "PR": "PRI", "BS": "BHS", "JM": "JAM", "TT": "TTO", "KN": "KNA",
-    "LC": "LCA", "VC": "VCT", "GD": "GRD", "AW": "ABW", "CW": "CUW", "FR": "FRA", "ES": "ESP",
-    "IT": "ITA", "DE": "DEU", "NL": "NLD", "BE": "BEL", "LU": "LUX", "CH": "CHE", "AT": "AUT",
-    "IE": "IRL", "DK": "DNK", "SE": "SWE", "NO": "NOR", "FI": "FIN", "EE": "EST", "LV": "LVA",
-    "LT": "LTU", "PL": "POL", "CZ": "CZE", "SK": "SVK", "HU": "HUN", "SI": "SVN", "HR": "HRV",
-    "BA": "BIH", "ME": "MNE", "AL": "ALB", "GR": "GRC", "TR": "TUR", "AD": "AND", "SM": "SMR",
-    "VA": "VAT", "MT": "MLT", "EG": "EGY", "TN": "TUN", "MA": "MAR", "KE": "KEN", "TZ": "TZA",
-    "ZA": "ZAF", "MU": "MUS", "QA": "QAT", "JO": "JOR", "IL": "ISR", "KG": "KGZ", "KZ": "KAZ",
-    "UZ": "UZB", "CN": "CHN", "KR": "KOR", "VN": "VNM", "LA": "LAO", "KH": "KHM", "SG": "SGP",
-    "TW": "TWN", "HK": "HKG", "AU": "AUS"
-  };
+// Prepare a clean settings data object for amCharts to read natively
+var userMapData = [];
 
-  worldSeries.mapPolygons.each(function(polygon) {
-    var rawId = polygon.get("id");
-    if (rawId && typeof rawId === "string") {
-      var mapIso3 = rawId.split("-").pop().toUpperCase();
-      
-      // Look up if any of your lived/visited 2-letter codes translate to this 3-letter code
-      const livedMatch = regionsLived.some(code => iso2ToIso3[code] === mapIso3);
-      const visitedMatch = regionsVisited.some(code => iso2ToIso3[code] === mapIso3);
-      
-      if (livedMatch) {
-        polygon.set("fill", am5.color(0xcd7f32)); // Luxury Terracotta/Bronze
-      } else if (visitedMatch) {
-        polygon.set("fill", am5.color(0xb49a6c)); // Luxury Gold
-      }
-    }
+// Push Visited Countries (Luxury Gold)
+regionsVisited.forEach(function(code) {
+  userMapData.push({
+    id: code,
+    settings: { fill: am5.color(0xb49a6c) }
   });
 });
+
+// Push Lived Countries (Luxury Terracotta/Bronze)
+regionsLived.forEach(function(code) {
+  // If a US state code like "US-CA" is used, pass it directly
+  userMapData.push({
+    id: code,
+    settings: { fill: am5.color(0xcd7f32) }
+  });
+});
+
+// Feed the parsed array straight into the map framework data layer
+worldSeries.data.setAll(userMapData);
 
   // Hover effect
   worldSeries.mapPolygons.template.states.create("hover", {
