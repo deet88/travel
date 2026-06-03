@@ -1527,15 +1527,15 @@
 
   // Custom palette: Luxury Gold for Been, Terracotta/Bronze for Lived
   worldSeries.events.on("datavalidated", function() {
-    worldSeries.mapPolygons.each(function(polygon) {
-      var id = polygon.get("id").split("-").pop();
-      if (regionsLived.includes(id)) {
-        polygon.set("fill", am5.color(0xcd7f32));
-      } else if (regionsVisited.includes(id)) {
-        polygon.set("fill", am5.color(0xb49a6c));
-      }
-    });
+  worldSeries.mapPolygons.each(function(polygon) {
+    var id = polygon.get("id").split("-").pop();
+    if (regionsLived.includes(id)) {
+      polygon.states.create("default", { "fill": am5.color(0xcd7f32) });
+    } else if (regionsVisited.includes(id)) {
+      polygon.states.create("default", { "fill": am5.color(0xb49a6c) });
+    }
   });
+});
 
   // Hover effect
   worldSeries.mapPolygons.template.states.create("hover", {
