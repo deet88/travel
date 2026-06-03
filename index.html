@@ -671,6 +671,10 @@
       .journeys-grid { grid-template-columns: 1fr; }
     }
   </style>
+  <script src="https://cdn.amcharts.com/lib/5/index.js"></script>
+  <script src="https://cdn.amcharts.com/lib/5/map.js"></script>
+  <script src="https://cdn.amcharts.com/lib/5/geodata/worldLow.js"></script>
+  <script src="https://cdn.amcharts.com/lib/5/themes/Animated.js"></script>
 </head>
 <body>
 
@@ -725,53 +729,7 @@
     <p class="section-desc fade-up">From the ancient temples of Asia to the safari plains of East Africa, each destination holds a chapter of our story.</p>
 
     <div class="map-wrap fade-up">
-      <svg viewBox="0 0 1000 500" xmlns="http://www.w3.org/2000/svg" style="background:#16232e">
-        <defs>
-          <style>
-            .land { fill: #2a3f52; stroke: #1a2e40; stroke-width: .5; }
-            .visited { fill: #b49a6c; opacity: .85; }
-            .visited:hover { opacity: 1; fill: #d4b896; }
-          </style>
-        </defs>
-        <line x1="0" y1="250" x2="1000" y2="250" stroke="rgba(255,255,255,.05)" stroke-width="1"/>
-        <line x1="500" y1="0" x2="500" y2="500" stroke="rgba(255,255,255,.05)" stroke-width="1"/>
-        
-        <path class="land visited" d="M40,80 L160,70 L200,130 L220,180 L190,220 L160,260 L120,270 L80,250 L50,210 L30,160 Z" title="North America"/>
-        <path class="land visited" d="M120,270 L165,265 L170,310 L140,330 L120,320 Z" title="Mexico"/>
-        <path class="land visited" d="M170,310 L230,290 L260,320 L270,400 L240,450 L200,460 L170,420 L155,370 Z" title="South America"/>
-        <path class="land visited" d="M205,255 Q230,248 240,256 Q235,265 210,264 Z" title="Caribbean"/>
-        <path class="land visited" d="M420,80 L490,75 L510,120 L500,160 L460,170 L430,155 L415,130 Z" title="Western Europe"/>
-        <path class="land visited" d="M410,75 L430,68 L435,100 L420,108 Z" title="UK"/>
-        <path class="land visited" d="M400,78 L412,73 L412,96 L400,90 Z" title="Ireland"/>
-        <path class="land visited" d="M450,40 L490,35 L495,72 L460,75 Z" title="Scandinavia"/>
-        <path class="land visited" d="M500,80 L560,78 L565,130 L505,135 Z" title="Eastern Europe"/>
-        <path class="land visited" d="M510,65 L540,62 L542,78 L511,80 Z" title="Baltic"/>
-        <path class="land" d="M560,40 L780,30 L790,120 L560,130 Z" title="Russia"/>
-        <path class="land visited" d="M620,100 L720,95 L722,130 L618,132 Z" title="Central Asia"/>
-        <path class="land visited" d="M560,140 L620,138 L625,175 L558,172 Z" title="Middle East"/>
-        <path class="land visited" d="M660,140 L760,138 L770,200 L720,210 L660,195 Z" title="SE Asia"/>
-        <path class="land visited" d="M760,80 L840,82 L848,150 L760,155 Z" title="East Asia"/>
-        <path class="land visited" d="M850,90 L870,86 L875,140 L852,143 Z" title="Japan"/>
-        <path class="land visited" d="M830,118 L848,115 L848,135 L830,135 Z" title="Korea"/>
-        <path class="land visited" d="M430,175 L560,170 L565,230 L428,235 Z" title="North Africa"/>
-        <path class="land visited" d="M530,230 L575,228 L580,330 L545,360 L510,340 L505,290 Z" title="East Africa"/>
-        <path class="land visited" d="M598,340 L605,337 L606,346 L598,347 Z" title="Mauritius"/>
-        <path class="land visited" d="M770,300 L870,295 L880,390 L830,405 L770,385 Z" title="Australia"/>
-        
-        <circle class="land visited" cx="758" cy="230" r="5" title="Singapore"/>
-        <circle class="land visited" cx="825" cy="178" r="5" title="Taiwan"/>
-        <circle class="land visited" cx="808" cy="185" r="4" title="Hong Kong"/>
-        <circle class="land visited" cx="660" cy="260" r="4" title="Maldives"/>
-        <circle class="land visited" cx="590" cy="175" r="4" title="Qatar"/>
-        <circle class="land visited" cx="618" cy="190" r="5" title="Oman"/>
-
-        <text x="100" y="180" fill="rgba(255,255,255,.3)" font-size="10" font-family="Montserrat,sans-serif" text-anchor="middle" letter-spacing="2">AMERICAS</text>
-        <text x="470" y="115" fill="rgba(255,255,255,.3)" font-size="10" font-family="Montserrat,sans-serif" text-anchor="middle" letter-spacing="2">EUROPE</text>
-        <text x="490" y="225" fill="rgba(255,255,255,.3)" font-size="10" font-family="Montserrat,sans-serif" text-anchor="middle" letter-spacing="2">AFRICA</text>
-        <text x="700" y="180" fill="rgba(255,255,255,.3)" font-size="10" font-family="Montserrat,sans-serif" text-anchor="middle" letter-spacing="2">ASIA</text>
-        <text x="820" y="355" fill="rgba(255,255,255,.3)" font-size="10" font-family="Montserrat,sans-serif" text-anchor="middle" letter-spacing="2">PACIFIC</text>
-        <text x="870" y="160" fill="rgba(255,255,255,.3)" font-size="10" font-family="Montserrat,sans-serif" text-anchor="middle" letter-spacing="2">JAPAN</text>
-      </svg>
+      <div id="world-map"></div>
     </div>
 
     <div class="continents-legend fade-up">
@@ -1528,6 +1486,66 @@
   }
 
   /* ── INITIALIZATION ── */
+
+  // Data arrays extracted from Countries Been screenshots
+  const regionsLived = ["GB", "JP", "US-CA", "US-NY"];
+  const regionsVisited = [
+    "US", "CA", "MX", "CO", "PE", "BZ", "GT", "DO", "PR", "BS", "JM", "TT", "KN", "LC", "VC", "GD", "AW", "CW",
+    "FR", "ES", "IT", "DE", "NL", "BE", "LU", "CH", "AT", "IE", "DK", "SE", "NO", "FI", "EE", "LV", "LT", "PL",
+    "CZ", "SK", "HU", "SI", "HR", "BA", "ME", "AL", "GR", "TR", "AD", "SM", "VA", "MT",
+    "EG", "TN", "MA", "KE", "TZ", "ZA", "MU", "QA", "JO", "IL",
+    "KG", "KZ", "UZ", "CN", "KR", "VN", "LA", "KH", "SG", "TW", "HK", "AU"
+  ];
+
+  // Create root element targeting the correct div
+  var root = am5.Root.new("world-map");
+
+  // Set themes
+  root.setThemes([am5theme_Animated.new(root)]);
+
+  // Create the map chart
+  var chart = root.container.children.push(am5map.MapChart.new(root, {
+    panX: "rotateX",
+    panY: "translateY",
+    projection: am5map.geoMercator(),
+    homeGeoPoint: { longitude: 10, latitude: 30 },
+    homeZoomLevel: 1
+  }));
+
+  // Create main polygon series for countries
+  var worldSeries = chart.series.push(am5map.MapPolygonSeries.new(root, {
+    geoJSON: am5geodata_worldLow,
+    exclude: ["AQ"]
+  }));
+
+  worldSeries.mapPolygons.template.setAll({
+    fill: am5.color(0x2a3f52),
+    stroke: am5.color(0x16232e),
+    strokeWidth: 0.5,
+    interactive: true,
+    templateField: "polygonSettings"
+  });
+
+  // Custom palette: Luxury Gold for Been, Terracotta/Bronze for Lived
+  worldSeries.events.on("datavalidated", function() {
+    worldSeries.mapPolygons.each(function(polygon) {
+      var id = polygon.get("id");
+      if (regionsLived.includes(id)) {
+        polygon.set("polygonSettings", { fill: am5.color(0xcd7f32) });
+      } else if (regionsVisited.includes(id)) {
+        polygon.set("polygonSettings", { fill: am5.color(0xb49a6c) });
+      }
+    });
+  });
+
+  // Hover effect
+  worldSeries.mapPolygons.template.states.create("hover", {
+    fill: am5.color(0xd4b896)
+  });
+
+  chart.set("zoomControl", am5map.ZoomControl.new(root, {}));
+  chart.appear(1000, 100);
+
   setTimeout(animateCounters, 600);
   renderJourneys("all");
   renderRestaurants(threeStars, "grid-three", 3);
