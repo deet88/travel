@@ -1528,7 +1528,7 @@
   // Custom palette: Luxury Gold for Been, Terracotta/Bronze for Lived
   worldSeries.events.on("datavalidated", function() {
     worldSeries.mapPolygons.each(function(polygon) {
-      var id = polygon.get("id");
+      var id = polygon.get("id").split("-").pop();
       if (regionsLived.includes(id)) {
         polygon.set("polygonSettings", { fill: am5.color(0xcd7f32) });
       } else if (regionsVisited.includes(id)) {
