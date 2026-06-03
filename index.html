@@ -1526,13 +1526,22 @@
   });
 
   worldSeries.events.on("datavalidated", function() {
-  console.log("--- AMCHARTS MAP ID DIAGNOSTIC START ---");
   worldSeries.mapPolygons.each(function(polygon) {
-    console.log("Map wants this exact ID:", polygon.get("id"));
+    // Read the ID directly out of amCharts v5's native dataItem layer
+    var dataItem = polygon.dataItem;
+    var id = dataItem ? dataItem.get("id") : null;
+    
+    if (id && typeof id === "string") {
+      // Clean up any sub-regional extensions (e.g., "US-CA" -> "CA")
+      var cleanId = id.split("-").pop().toUpperCase();
+      
+      if (regionsLived.includes(cleanId)) {
+        polygon.set("fill", am5.color(0xcd7f32)); // Terracotta/Bronze
+      } else if (regionsVisited.includes(cleanId)) {
+        polygon.set("fill", am5.color(0xb49a6c)); // Gold
+      }
+    }
   });
-  console.log("--- AMCHARTS MAP ID DIAGNOSTIC END ---");
-});
-
   // Hover effect
   worldSeries.mapPolygons.template.states.create("hover", {
     fill: am5.color(0xd4b896)
