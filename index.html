@@ -469,9 +469,17 @@
       transition: color .2s;
     }
     .countries-grid li:hover { color: var(--gold-lt); }
-    .country-bullet {
-      width: 5px; height: 5px; border-radius: 50%;
-      background: var(--gold); flex-shrink: 0; opacity: .7;
+    .country-emoji {
+      font-size: 1.4rem;
+      line-height: 1;
+      width: 2rem;
+      min-width: 2rem;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .country-name {
+      flex: 1;
     }
     .country-flags { margin-left: auto; display: flex; gap: .4rem; }
     .country-flags span {
@@ -1430,12 +1438,31 @@
   }
 
   /* ── RENDER COUNTRIES ── */
+  const countryFlagMap = {
+    "Albania":"🇦🇱","Andorra":"🇦🇩","Aruba":"🇦🇼","Australia":"🇦🇺","Austria":"🇦🇹","Barbados":"🇧🇧","Belgium":"🇧🇪",
+    "Belize":"🇧🇿","Cambodia":"🇰🇭","Canada":"🇨🇦","China":"🇨🇳","Colombia":"🇨🇴","Costa Rica":"🇨🇷","Croatia":"🇭🇷",
+    "Czech Republic":"🇨🇿","Denmark":"🇩🇰","Dominican Republic":"🇩🇴","Ecuador":"🇪🇨","Egypt":"🇪🇬","England":"🇬🇧","Estonia":"🇪🇪",
+    "Finland":"🇫🇮","France":"🇫🇷","Georgia":"🇬🇪","Germany":"🇩🇪","Guatemala":"🇬🇹","Hong Kong":"🇭🇰","Hungary":"🇭🇺",
+    "Ireland":"🇮🇪","Israel":"🇮🇱","Italy":"🇮🇹","Japan":"🇯🇵","Jordan":"🇯🇴","Kazakhstan":"🇰🇿","Kenya":"🇰🇪",
+    "Kyrgyzstan":"🇰🇬","Laos":"🇱🇦","Latvia":"🇱🇻","Liechtenstein":"🇱🇮","Lithuania":"🇱🇹","Luxembourg":"🇱🇺","Maldives":"🇲🇻",
+    "Malta":"🇲🇹","Mauritius":"🇲🇺","Mexico":"🇲🇽","Monaco":"🇲🇨","Montenegro":"🇲🇪","Morocco":"🇲🇦","Netherlands":"🇳🇱",
+    "Northern Ireland":"🇬🇧","Norway":"🇳🇴","Oman":"🇴🇲","Panama":"🇵🇦","Peru":"🇵🇪","Poland":"🇵🇱","Portugal":"🇵🇹",
+    "Qatar":"🇶🇦","San Marino":"🇸🇲","Scotland":"🇬🇧","Singapore":"🇸🇬","Sint Maarten":"🇸🇽","Slovakia":"🇸🇰","Slovenia":"🇸🇮",
+    "South Africa":"🇿🇦","South Korea":"🇰🇷","Spain":"🇪🇸","St. Kitts & Nevis":"🇰🇳","St. Lucia":"🇱🇨","Sweden":"🇸🇪","Switzerland":"🇨🇭",
+    "Taiwan":"🇹🇼","Tanzania":"🇹🇿","Trinidad & Tobago":"🇹🇹","Tunisia":"🇹🇳","Turkey":"🇹🇷","United States":"🇺🇸","Uzbekistan":"🇺🇿",
+    "Vatican City":"🇻🇦","Vietnam":"🇻🇳","Wales":"🇬🇧","West Bank":"🇵🇸"
+  };
+
+  function countryFlag(name) {
+    return countryFlagMap[name] || "";
+  }
+
   function renderCountries() {
     const list = document.getElementById("countries-list");
     list.innerHTML = countries.map(c => `
       <li>
-        <div class="country-bullet"></div>
-        <span>${c.n}</span>
+        <span class="country-emoji">${countryFlag(c.n)}</span>
+        <span class="country-name">${c.n}</span>
         <span class="country-flags">
           ${c.s ? '<span>🤿</span>' : ''}
           ${c.d ? '<span>⭐</span>' : ''}
