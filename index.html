@@ -1521,36 +1521,6 @@
     fill: am5.color(0x2a3f52),
     stroke: am5.color(0x16232e),
     strokeWidth: 0.5,
-    interactive: true,
-    templateField: "polygonSettings"
-  });
-/* ── INITIALIZATION ── */
-
-  // Create root element targeting the correct div
-  var root = am5.Root.new("world-map");
-
-  // Set themes
-  root.setThemes([am5themes_Animated.new(root)]);
-
-  // Create the map chart
-  var chart = root.container.children.push(am5map.MapChart.new(root, {
-    panX: "rotateX",
-    panY: "translateY",
-    projection: am5map.geoMercator(),
-    homeGeoPoint: { longitude: 10, latitude: 30 },
-    homeZoomLevel: 1
-  }));
-
-  // Create main polygon series for countries
-  var worldSeries = chart.series.push(am5map.MapPolygonSeries.new(root, {
-    geoJSON: am5geodata_worldLow,
-    exclude: ["AQ"]
-  }));
-
-  worldSeries.mapPolygons.template.setAll({
-    fill: am5.color(0x2a3f52),
-    stroke: am5.color(0x16232e),
-    strokeWidth: 0.5,
     interactive: true
   });
 
