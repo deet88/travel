@@ -1526,16 +1526,6 @@
   });
 /* ── INITIALIZATION ── */
 
-  // Data arrays extracted from Countries Been screenshots
-  const regionsLived = ["GB", "JP", "US-CA", "US-NY"];
-  const regionsVisited = [
-    "US", "CA", "MX", "CO", "PE", "BZ", "GT", "DO", "PR", "BS", "JM", "TT", "KN", "LC", "VC", "GD", "AW", "CW",
-    "FR", "ES", "IT", "DE", "NL", "BE", "LU", "CH", "AT", "IE", "DK", "SE", "NO", "FI", "EE", "LV", "LT", "PL",
-    "CZ", "SK", "HU", "SI", "HR", "BA", "ME", "AL", "GR", "TR", "AD", "SM", "VA", "MT",
-    "EG", "TN", "MA", "KE", "TZ", "ZA", "MU", "QA", "JO", "IL",
-    "KG", "KZ", "UZ", "CN", "KR", "VN", "LA", "KH", "SG", "TW", "HK", "AU"
-  ];
-
   // Create root element targeting the correct div
   var root = am5.Root.new("world-map");
 
@@ -1589,14 +1579,6 @@
 
   chart.set("zoomControl", am5map.ZoomControl.new(root, {}));
   chart.appear(1000, 100);
-
-  setTimeout(animateCounters, 600);
-  renderJourneys("all");
-  renderRestaurants(threeStars, "grid-three", 3);
-  renderRestaurants(twoStars, "grid-two", 2);
-  renderRestaurants(oneStars, "grid-one", 1);
-  renderCountries();
-  observeFadeUps();
 
   setTimeout(animateCounters, 600);
   renderJourneys("all");
