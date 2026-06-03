@@ -1526,20 +1526,20 @@
   });
 
   // Use an adapter to check and color every country dynamically as it loads
-worldSeries.mapPolygons.template.adapters.add("fill", function(fill, target) {
-  var id = target.dataItem ? target.dataItem.get("id") : null;
-  if (id) {
-    // Strip prefix if any (e.g., "US-CA" -> "CA" or "BR-GB" -> "GB")
-    var cleanId = id.split("-").pop();
+worldSeries.events.on("datavalidated", function() {
+  worldSeries.mapPolygons.each(function(polygon) {
+    var rawId = polygon.get("id");
     
-    if (regionsLived.includes(cleanId)) {
-      return am5.color(0xcd7f32); // Luxury Terracotta/Bronze
+    if (rawId && typeof rawId === "string") {
+      var id = rawId.split("-").pop();
+      
+      if (regionsLived.includes(id)) {
+        polygon.set("fill", am5.color(0xcd7f32));
+      } else if (regionsVisited.includes(id)) {
+        polygon.set("fill", am5.color(0xb49a6c));
+      }
     }
-    if (regionsVisited.includes(cleanId)) {
-      return am5.color(0xb49a6c); // Luxury Gold
-    }
-  }
-  return fill; // Leave unvisited countries dark blue
+  });
 });
 
   // Hover effect
