@@ -1524,31 +1524,79 @@
     interactive: true,
     templateField: "polygonSettings"
   });
+/* ── INITIALIZATION ── */
 
-  worldSeries.events.on("datavalidated", function() {
-  worldSeries.mapPolygons.each(function(polygon) {
-    // Read the ID directly out of amCharts v5's native dataItem layer
-    var dataItem = polygon.dataItem;
-    var id = dataItem ? dataItem.get("id") : null;
-    
-    if (id && typeof id === "string") {
-      // Clean up any sub-regional extensions (e.g., "US-CA" -> "CA")
-      var cleanId = id.split("-").pop().toUpperCase();
-      
-      if (regionsLived.includes(cleanId)) {
-        polygon.set("fill", am5.color(0xcd7f32)); // Terracotta/Bronze
-      } else if (regionsVisited.includes(cleanId)) {
-        polygon.set("fill", am5.color(0xb49a6c)); // Gold
+  // Data arrays extracted from Countries Been screenshots
+  const regionsLived = ["GB", "JP", "US-CA", "US-NY"];
+  const regionsVisited = [
+    "US", "CA", "MX", "CO", "PE", "BZ", "GT", "DO", "PR", "BS", "JM", "TT", "KN", "LC", "VC", "GD", "AW", "CW",
+    "FR", "ES", "IT", "DE", "NL", "BE", "LU", "CH", "AT", "IE", "DK", "SE", "NO", "FI", "EE", "LV", "LT", "PL",
+    "CZ", "SK", "HU", "SI", "HR", "BA", "ME", "AL", "GR", "TR", "AD", "SM", "VA", "MT",
+    "EG", "TN", "MA", "KE", "TZ", "ZA", "MU", "QA", "JO", "IL",
+    "KG", "KZ", "UZ", "CN", "KR", "VN", "LA", "KH", "SG", "TW", "HK", "AU"
+  ];
+
+  // Create root element targeting the correct div
+  var root = am5.Root.new("world-map");
+
+  // Set themes
+  root.setThemes([am5themes_Animated.new(root)]);
+
+  // Create the map chart
+  var chart = root.container.children.push(am5map.MapChart.new(root, {
+    panX: "rotateX",
+    panY: "translateY",
+    projection: am5map.geoMercator(),
+    homeGeoPoint: { longitude: 10, latitude: 30 },
+    homeZoomLevel: 1
+  }));
+
+  // Create main polygon series for countries
+  var worldSeries = chart.series.push(am5map.MapPolygonSeries.new(root, {
+    geoJSON: am5geodata_worldLow,
+    exclude: ["AQ"]
+  }));
+
+  worldSeries.mapPolygons.template.setAll({
+    fill: am5.color(0x2a3f52),
+    stroke: am5.color(0x16232e),
+    strokeWidth: 0.5,
+    interactive: true
+  });
+
+  // Force colors to inject dynamically as each shape item loads natively in amCharts v5
+  worldSeries.mapPolygons.template.adapters.add("fill", function(fill, target) {
+    if (target && target.dataItem) {
+      var id = target.dataItem.get("id");
+      if (id && typeof id === "string") {
+        var cleanId = id.split("-").pop().toUpperCase();
+        
+        if (regionsLived.includes(cleanId)) {
+          return am5.color(0xcd7f32); // Luxury Terracotta/Bronze
+        }
+        if (regionsVisited.includes(cleanId)) {
+          return am5.color(0xb49a6c); // Luxury Gold
+        }
       }
     }
+    return fill;
   });
-  // Hover effect
+
+  // Hover effect state
   worldSeries.mapPolygons.template.states.create("hover", {
     fill: am5.color(0xd4b896)
   });
 
   chart.set("zoomControl", am5map.ZoomControl.new(root, {}));
   chart.appear(1000, 100);
+
+  setTimeout(animateCounters, 600);
+  renderJourneys("all");
+  renderRestaurants(threeStars, "grid-three", 3);
+  renderRestaurants(twoStars, "grid-two", 2);
+  renderRestaurants(oneStars, "grid-one", 1);
+  renderCountries();
+  observeFadeUps();
 
   setTimeout(animateCounters, 600);
   renderJourneys("all");
