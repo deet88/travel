@@ -1525,29 +1525,13 @@
     templateField: "polygonSettings"
   });
 
-  // Use an adapter to check and color every country dynamically as it loads
-// Prepare a clean settings data object for amCharts to read natively
-var userMapData = [];
-
-// Push Visited Countries (Luxury Gold)
-regionsVisited.forEach(function(code) {
-  userMapData.push({
-    id: code,
-    settings: { fill: am5.color(0xb49a6c) }
+  worldSeries.events.on("datavalidated", function() {
+  console.log("--- AMCHARTS MAP ID DIAGNOSTIC START ---");
+  worldSeries.mapPolygons.each(function(polygon) {
+    console.log("Map wants this exact ID:", polygon.get("id"));
   });
+  console.log("--- AMCHARTS MAP ID DIAGNOSTIC END ---");
 });
-
-// Push Lived Countries (Luxury Terracotta/Bronze)
-regionsLived.forEach(function(code) {
-  // If a US state code like "US-CA" is used, pass it directly
-  userMapData.push({
-    id: code,
-    settings: { fill: am5.color(0xcd7f32) }
-  });
-});
-
-// Feed the parsed array straight into the map framework data layer
-worldSeries.data.setAll(userMapData);
 
   // Hover effect
   worldSeries.mapPolygons.template.states.create("hover", {
