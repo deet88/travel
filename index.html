@@ -532,10 +532,10 @@
     }
     .fade-up.visible { opacity: 1; transform: none; }
 
-    /* ── ITINERARY MODAL ── */
+    /* ── JOURNEY MODAL (FULL SCREEN) ── */
     .itin-modal {
       position: fixed; inset: 0; z-index: 200;
-      display: flex; align-items: stretch;
+      display: flex;
       pointer-events: none;
     }
     .itin-modal.open { pointer-events: all; }
@@ -545,46 +545,47 @@
       background: rgba(0,0,0,0);
       transition: background .35s ease;
     }
-    .itin-modal.open .itin-backdrop { background: rgba(0,0,0,.55); }
+    .itin-modal.open .itin-backdrop { background: rgba(0,0,0,.7); }
 
     .itin-panel {
       position: relative; z-index: 1;
-      margin-left: auto;
-      width: min(560px, 100vw);
-      height: 100vh;
+      width: 100%; height: 100%;
       background: var(--cream);
-      transform: translateX(100%);
-      transition: transform .4s cubic-bezier(.4,0,.2,1);
       display: flex; flex-direction: column;
+      opacity: 0; transform: translateY(20px);
+      transition: opacity .35s ease, transform .35s ease;
       overflow: hidden;
     }
-    .itin-modal.open .itin-panel { transform: translateX(0); }
+    .itin-modal.open .itin-panel { opacity: 1; transform: none; }
 
-    .itin-close {
-      position: absolute; top: 1.2rem; right: 1.4rem; z-index: 10;
-      background: rgba(0,0,0,.25); border: none;
-      color: var(--white); width: 2.2rem; height: 2.2rem;
-      border-radius: 50%; font-size: 1rem; cursor: pointer;
-      display: flex; align-items: center; justify-content: center;
-      transition: background .2s;
-    }
-    .itin-close:hover { background: rgba(0,0,0,.45); }
-
-    .itin-hero {
+    /* Header */
+    .itin-header {
       flex-shrink: 0;
-      height: 220px;
+      height: 180px;
       position: relative;
       display: flex; align-items: flex-end;
     }
-    .itin-hero::after {
+    .itin-header::after {
       content: '';
       position: absolute; inset: 0;
-      background: linear-gradient(to top, rgba(0,0,0,.55) 0%, transparent 55%);
+      background: linear-gradient(to top, rgba(0,0,0,.68) 0%, rgba(0,0,0,.12) 55%, transparent 100%);
     }
-    .itin-hero-inner {
+    .itin-header-inner {
       position: relative; z-index: 1;
-      padding: 1.8rem 2rem;
+      padding: 1.8rem 2.5rem;
+      flex: 1;
     }
+
+    .itin-close {
+      position: absolute; top: 1.4rem; right: 1.8rem; z-index: 10;
+      background: rgba(0,0,0,.3); border: none;
+      color: var(--white); width: 2.4rem; height: 2.4rem;
+      border-radius: 50%; font-size: 1rem; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      transition: background .2s; font-family: var(--fs-sans);
+    }
+    .itin-close:hover { background: rgba(0,0,0,.55); }
+
     .itin-eyebrow {
       font-family: var(--fs-sans);
       font-size: .6rem; letter-spacing: .25em; text-transform: uppercase;
@@ -592,7 +593,7 @@
     }
     .itin-title {
       font-family: var(--fs-serif);
-      font-size: 1.9rem; font-weight: 400; line-height: 1.15;
+      font-size: clamp(1.6rem, 3vw, 2.4rem); font-weight: 400; line-height: 1.15;
       color: var(--white); margin-bottom: .5rem;
     }
     .itin-meta {
@@ -601,64 +602,227 @@
       color: rgba(255,255,255,.65);
     }
 
+    /* Tab nav */
+    .itin-tabs-nav {
+      flex-shrink: 0;
+      display: flex; gap: 0;
+      background: var(--white);
+      border-bottom: 1px solid rgba(180,154,108,.2);
+      padding: 0 2.5rem;
+    }
+    .itin-tab-btn {
+      padding: .9rem 2rem;
+      font-family: var(--fs-sans);
+      font-size: .62rem; letter-spacing: .2em; text-transform: uppercase;
+      color: #999; cursor: pointer;
+      border: none; background: none;
+      border-bottom: 2px solid transparent; margin-bottom: -1px;
+      transition: color .2s, border-color .2s;
+    }
+    .itin-tab-btn.active { color: var(--gold); border-bottom-color: var(--gold); }
+    .itin-tab-btn:hover:not(.active) { color: var(--charcoal); }
+
+    /* Scrollable body */
     .itin-body {
-      flex: 1; overflow-y: auto;
-      padding: 2rem 2rem 3rem;
+      flex: 1; overflow-y: auto; background: var(--cream);
     }
     .itin-body::-webkit-scrollbar { width: 4px; }
     .itin-body::-webkit-scrollbar-track { background: transparent; }
     .itin-body::-webkit-scrollbar-thumb { background: var(--gold); border-radius: 2px; }
 
+    /* Tab panels */
+    .itin-tab-panel { display: none; }
+    .itin-tab-panel.active { display: block; }
+
+    /* Gallery */
+    .itin-gallery-wrap { padding: 2.5rem; }
+    .itin-gallery-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 1rem;
+    }
+    .itin-gallery-item {
+      aspect-ratio: 4/3;
+      background: var(--mist);
+      border: 1px solid rgba(180,154,108,.2);
+      overflow: hidden; position: relative;
+    }
+    .itin-gallery-item img {
+      width: 100%; height: 100%; object-fit: cover; display: block;
+      transition: transform .4s ease;
+    }
+    .itin-gallery-item:hover img { transform: scale(1.04); }
+    .itin-gallery-placeholder {
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      height: 100%; gap: .7rem;
+      color: rgba(180,154,108,.45);
+      font-family: var(--fs-sans); font-size: .58rem; letter-spacing: .18em; text-transform: uppercase;
+    }
+
+    /* Itinerary day grid */
+    .itin-itin-wrap { padding: 2.5rem; }
+    .itin-placeholder {
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      min-height: 320px; text-align: center; gap: .9rem;
+      border: 1px dashed rgba(180,154,108,.3);
+      border-radius: 2px; padding: 3rem;
+    }
+    .itin-placeholder-rule {
+      width: 40px; height: 1px; background: var(--gold); opacity: .4;
+    }
+    .itin-placeholder-title {
+      font-family: var(--fs-serif); font-size: 1.9rem; font-weight: 300;
+      color: var(--charcoal); font-style: italic;
+    }
+    .itin-placeholder-sub {
+      font-family: var(--fs-sans); font-size: .6rem; letter-spacing: .2em; text-transform: uppercase;
+      color: rgba(180,154,108,.7);
+    }
+    /* City-grouped itinerary */
+    .itin-city-wrap { padding-bottom: 3rem; }
+
+    .itin-cat-legend {
+      display: flex; flex-wrap: wrap; gap: .6rem 1.4rem;
+      padding: 1.2rem 2.5rem;
+      border-bottom: 1px solid rgba(180,154,108,.15);
+    }
+    .itin-cat-pill {
+      display: flex; align-items: center; gap: .4rem;
+      font-family: var(--fs-sans); font-size: .55rem;
+      letter-spacing: .15em; text-transform: uppercase; color: #999;
+    }
+    .itin-cat-dot {
+      width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0;
+    }
+
+    .itin-city-section { margin-bottom: 0; }
+
+    .itin-city-banner {
+      padding: 2rem 2.5rem;
+      display: flex; align-items: flex-end; justify-content: space-between;
+      position: relative; overflow: hidden;
+    }
+    .itin-city-banner::after {
+      content: '';
+      position: absolute; inset: 0;
+      background: linear-gradient(to right, rgba(0,0,0,.55), rgba(0,0,0,.1));
+    }
+    .itin-city-banner-content { position: relative; z-index: 1; }
+    .itin-city-name {
+      font-family: var(--fs-serif);
+      font-size: clamp(2rem, 4vw, 3rem);
+      font-weight: 300; color: var(--white); line-height: 1;
+    }
+    .itin-city-dates {
+      font-family: var(--fs-sans); font-size: .58rem; letter-spacing: .25em;
+      text-transform: uppercase; color: rgba(255,255,255,.55); margin-top: .45rem;
+    }
+    .itin-city-nights {
+      position: relative; z-index: 1; text-align: right;
+      font-family: var(--fs-serif); font-size: 2.6rem; font-weight: 300;
+      color: rgba(255,255,255,.35); line-height: 1;
+    }
+    .itin-city-nights span {
+      display: block; font-family: var(--fs-sans); font-size: .52rem;
+      letter-spacing: .22em; text-transform: uppercase;
+      color: rgba(255,255,255,.35); margin-top: .3rem;
+    }
+
+    .itin-days-cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 1px; background: rgba(180,154,108,.12);
+      margin-bottom: 2px;
+    }
+
+    .itin-day-card { background: var(--white); }
+    .itin-day-card-head {
+      padding: .7rem 1.1rem;
+      background: var(--charcoal);
+      display: flex; justify-content: space-between; align-items: center;
+      gap: .8rem;
+    }
+    .itin-day-card-date {
+      font-family: var(--fs-sans); font-size: .56rem; letter-spacing: .2em;
+      text-transform: uppercase; color: var(--gold); white-space: nowrap;
+    }
+    .itin-day-card-area {
+      font-family: var(--fs-sans); font-size: .52rem; letter-spacing: .1em;
+      text-transform: uppercase; color: rgba(255,255,255,.35);
+      text-align: right; line-height: 1.3;
+    }
+    .itin-day-card-body { padding: .3rem 0; }
+
+    .itin-entry {
+      display: flex; align-items: flex-start;
+      padding: .4rem 1.1rem;
+      border-bottom: 1px solid rgba(180,154,108,.07);
+    }
+    .itin-entry:last-child { border-bottom: none; }
+    .itin-entry-bar {
+      width: 3px; flex-shrink: 0; align-self: stretch;
+      margin-right: .75rem; border-radius: 2px; min-height: 18px;
+    }
+    .itin-entry-time {
+      font-family: var(--fs-sans); font-size: .54rem; letter-spacing: .04em;
+      color: #bbb; min-width: 54px; padding-top: .12rem; flex-shrink: 0;
+    }
+    .itin-entry-name {
+      font-family: var(--fs-serif); font-size: .95rem; line-height: 1.35;
+      color: var(--charcoal); flex: 1;
+    }
+
+    .cat-food     { background: #c08878; }
+    .cat-travel   { background: #7098b8; }
+    .cat-outdoor  { background: #6a9e78; }
+    .cat-indoor   { background: #8878b8; }
+    .cat-booked   { background: var(--gold); }
+    .cat-shopping { background: #b08840; }
+
+    /* Stops timeline */
+    .itin-stops-wrap { padding: 2.5rem; max-width: 760px; margin: 0 auto; }
+    .itin-stops-header {
+      font-family: var(--fs-sans); font-size: .6rem; letter-spacing: .25em; text-transform: uppercase;
+      color: var(--gold); margin-bottom: 2rem; padding-bottom: .8rem;
+      border-bottom: 1px solid rgba(180,154,108,.2);
+    }
     .itin-timeline { position: relative; }
     .itin-timeline::before {
       content: '';
       position: absolute; left: .9rem; top: .5rem; bottom: .5rem;
       width: 1px; background: rgba(180,154,108,.25);
     }
-
     .itin-stop {
       display: flex; gap: 1.4rem;
-      padding: 0 0 1.8rem;
-      position: relative;
+      padding: 0 0 1.8rem; position: relative;
     }
     .itin-stop:last-child { padding-bottom: 0; }
     .itin-dot {
-      flex-shrink: 0;
-      width: 1.8rem; height: 1.8rem;
-      border-radius: 50%;
-      background: var(--white);
+      flex-shrink: 0; width: 1.8rem; height: 1.8rem;
+      border-radius: 50%; background: var(--white);
       border: 2px solid var(--gold);
       display: flex; align-items: center; justify-content: center;
       position: relative; z-index: 1;
     }
-    .itin-dot-inner {
-      width: .55rem; height: .55rem;
-      border-radius: 50%; background: var(--gold);
-    }
+    .itin-dot-inner { width: .55rem; height: .55rem; border-radius: 50%; background: var(--gold); }
     .itin-stop-content { flex: 1; padding-top: .15rem; }
     .itin-stop-country {
-      font-family: var(--fs-serif);
-      font-size: 1.2rem; font-weight: 400;
+      font-family: var(--fs-serif); font-size: 1.2rem; font-weight: 400;
       color: var(--charcoal); margin-bottom: .2rem;
     }
     .itin-stop-dates {
-      font-family: var(--fs-sans);
-      font-size: .62rem; letter-spacing: .08em;
+      font-family: var(--fs-sans); font-size: .62rem; letter-spacing: .08em;
       color: #999; margin-bottom: .3rem;
     }
     .itin-stop-duration {
-      display: inline-block;
-      font-family: var(--fs-sans);
+      display: inline-block; font-family: var(--fs-sans);
       font-size: .58rem; letter-spacing: .12em; text-transform: uppercase;
-      color: var(--gold);
-      border: 1px solid rgba(180,154,108,.4);
+      color: var(--gold); border: 1px solid rgba(180,154,108,.4);
       padding: .18rem .65rem; border-radius: 1px;
     }
     .itin-stop-who {
-      float: right;
-      font-family: var(--fs-sans);
-      font-size: .58rem; letter-spacing: .1em;
-      color: #bbb; margin-top: .2rem;
+      float: right; font-family: var(--fs-sans);
+      font-size: .58rem; letter-spacing: .1em; color: #bbb; margin-top: .2rem;
     }
 
     @media (max-width: 768px) {
@@ -825,16 +989,34 @@
 <div id="itin-modal" class="itin-modal" aria-modal="true" role="dialog" aria-hidden="true">
   <div class="itin-backdrop"></div>
   <div class="itin-panel">
-    <button class="itin-close" aria-label="Close">&#x2715;</button>
-    <div class="itin-hero" id="itin-hero">
-      <div class="itin-hero-inner">
+    <div class="itin-header" id="itin-hero">
+      <div class="itin-header-inner">
         <p class="itin-eyebrow" id="itin-eyebrow"></p>
         <h2 class="itin-title" id="itin-title"></h2>
         <p class="itin-meta" id="itin-meta"></p>
       </div>
+      <button class="itin-close" aria-label="Close">&#x2715;</button>
+    </div>
+    <div class="itin-tabs-nav">
+      <button class="itin-tab-btn" data-panel="gallery">Gallery</button>
+      <button class="itin-tab-btn" data-panel="itinerary">Itinerary</button>
+      <button class="itin-tab-btn active" data-panel="stops">Journey</button>
     </div>
     <div class="itin-body">
-      <div class="itin-timeline" id="itin-timeline"></div>
+      <div class="itin-tab-panel" id="itin-panel-gallery">
+        <div class="itin-gallery-wrap">
+          <div class="itin-gallery-grid" id="itin-gallery"></div>
+        </div>
+      </div>
+      <div class="itin-tab-panel" id="itin-panel-itinerary">
+        <div id="itin-itinerary-content"></div>
+      </div>
+      <div class="itin-tab-panel active" id="itin-panel-stops">
+        <div class="itin-stops-wrap">
+          <p class="itin-stops-header">Journey Timeline</p>
+          <div class="itin-timeline" id="itin-timeline"></div>
+        </div>
+      </div>
     </div>
   </div>
 </div>
@@ -1135,6 +1317,145 @@
     { year:2026, title:"Japan — Spring Edition", region:"Asia", filter:"asia", destinations:["Japan","Osaka","Kyoto","Tokyo"], travelers:"Both", gradient:"linear-gradient(135deg,#f7971e,#ffd200)",
       stops:[
         {country:"Japan", entry:"3/28/2026", exit:"4/12/2026", who:"Both"},
+      ],
+      days:[
+        { city:"Tokyo", area:"Central", date:"Fri Mar 27", entries:[
+          { time:"11:00 AM", activity:"Flight to HKG", cat:"travel" },
+          { time:"5:30 PM",  activity:"Flight to NRT", cat:"travel" },
+          { time:"9:00 PM",  activity:"Cheap Dinner — Ramen, Yakitori", cat:"food" },
+        ]},
+        { city:"Tokyo", area:"Shinjuku", date:"Sat Mar 28", entries:[
+          { time:"9:30 AM",  activity:"Get in line", cat:"outdoor" },
+          { time:"11:00 AM", activity:"Conveyor Belt Sushi", cat:"food" },
+          { time:"12:00 PM", activity:"Buy stationary", cat:"shopping" },
+          { time:"12:30 PM", activity:"Buy cool chocolate", cat:"shopping" },
+          { time:"2:00 PM",  activity:"Making a pillow", cat:"indoor" },
+          { time:"5:30 PM",  activity:"Go up to Ueno / Asakusa", cat:"travel" },
+          { time:"6:30 PM",  activity:"Cheap Dinner — Udon, Yakiniku, Shabu Shabu", cat:"food" },
+        ]},
+        { city:"Tokyo", area:"Wedding", date:"Sun Mar 29", entries:[
+          { time:"10:00 AM", activity:"Go to wedding", cat:"travel" },
+          { time:"11:30 AM", activity:"Wedding Ceremony", cat:"booked" },
+          { time:"1:00 PM",  activity:"Wedding Lunch", cat:"booked" },
+          { time:"4:00 PM",  activity:"Go to hotel", cat:"travel" },
+          { time:"5:30 PM",  activity:"Go down to Meguro", cat:"travel" },
+          { time:"6:30 PM",  activity:"Cheap Dinner — Udon, Yakiniku, Shabu Shabu", cat:"food" },
+        ]},
+        { city:"Tokyo", area:"Shinjuku", date:"Mon Mar 30", entries:[
+          { time:"9:30 AM",  activity:"Team Lab Borderless", cat:"indoor" },
+          { time:"12:30 PM", activity:"Lunch at Sakuratei", cat:"food" },
+          { time:"2:00 PM",  activity:"Work our way up to Shinjuku", cat:"travel" },
+          { time:"3:00 PM",  activity:"Freewheelers PBJ / The Flat Head / Full Count", cat:"shopping" },
+          { time:"6:30 PM",  activity:"Dinner at Asahina with Evan and Chie", cat:"booked" },
+          { time:"7:00 PM",  activity:"Tenjaku", cat:"food" },
+        ]},
+        { city:"Kyoto", area:"North · With Evan", date:"Tue Mar 31", entries:[
+          { time:"8:00 AM",  activity:"Tsukiji Fish Market", cat:"food" },
+          { time:"9:30 AM",  activity:"Walk around near Imperial Palace", cat:"outdoor" },
+          { time:"11:30 AM", activity:"Kyoto Sento Imperial Palace", cat:"booked" },
+          { time:"1:00 PM",  activity:"Ryoan Ji", cat:"outdoor" },
+          { time:"1:30 PM",  activity:"Soup with noodles", cat:"food" },
+          { time:"2:30 PM",  activity:"Katsu curry and katsudon", cat:"food" },
+          { time:"3:00 PM",  activity:"Cute trains to River Boat", cat:"travel" },
+          { time:"4:00 PM",  activity:"Explore Arashiyama area", cat:"outdoor" },
+          { time:"6:30 PM",  activity:"Nice soba spot", cat:"food" },
+        ]},
+        { city:"Kyoto", area:"With Evan", date:"Wed Apr 1", entries:[
+          { time:"9:00 AM",  activity:"Kyoto botanical garden", cat:"outdoor" },
+          { time:"10:30 AM", activity:"Maruyama Park", cat:"outdoor" },
+          { time:"11:30 AM", activity:"Udon and oyakadon", cat:"food" },
+          { time:"1:00 PM",  activity:"Chicken katsu and beef", cat:"food" },
+          { time:"2:00 PM",  activity:"Shimogamo Shrine", cat:"outdoor" },
+          { time:"2:30 PM",  activity:"Kamo river walk", cat:"outdoor" },
+          { time:"3:30 PM",  activity:"Cake at Salon de Royal", cat:"food" },
+          { time:"4:00 PM",  activity:"Move bags to second ryokan", cat:"travel" },
+          { time:"5:30 PM",  activity:"Walk up Takano river", cat:"outdoor" },
+          { time:"7:00 PM",  activity:"Spicy ramen with beef", cat:"food" },
+          { time:"7:30 PM",  activity:"Dinner at hotel — Kaiseki", cat:"booked" },
+        ]},
+        { city:"Kyoto", area:"East · With Evan", date:"Thu Apr 2", entries:[
+          { time:"8:00 AM",  activity:"Breakfast", cat:"food" },
+          { time:"9:00 AM",  activity:"Fushimi Inari", cat:"outdoor" },
+          { time:"10:30 AM", activity:"Sanjusangendo", cat:"indoor" },
+          { time:"12:00 PM", activity:"Lunch — bento", cat:"food" },
+          { time:"1:00 PM",  activity:"Philosopher Path / Ginkaku-ji", cat:"outdoor" },
+          { time:"1:30 PM",  activity:"Kennin-ji", cat:"indoor" },
+          { time:"2:30 PM",  activity:"Sushi (Izugen)", cat:"food" },
+          { time:"6:30 PM",  activity:"Massage", cat:"booked" },
+        ]},
+        { city:"Kyoto", area:"West · With Evan", date:"Fri Apr 3", entries:[
+          { time:"8:00 AM",  activity:"Breakfast", cat:"food" },
+          { time:"9:00 AM",  activity:"Kiyomizudera", cat:"outdoor" },
+          { time:"10:30 AM", activity:"Okazaki Park", cat:"outdoor" },
+          { time:"12:00 PM", activity:"Philosopher Path / Ginkaku-ji", cat:"outdoor" },
+          { time:"1:00 PM",  activity:"Saiho-ji (Moss Garden)", cat:"booked" },
+          { time:"7:00 PM",  activity:"Dinner at hotel — Kaiseki", cat:"booked" },
+        ]},
+        { city:"Kyoto", area:"South", date:"Sat Apr 4", entries:[
+          { time:"9:30 AM",  activity:"Go to Saiho-ji", cat:"outdoor" },
+          { time:"12:30 PM", activity:"Lunch — bento", cat:"food" },
+          { time:"1:00 PM",  activity:"45R, Loftman, Real McCoys, Kamakura shirts", cat:"shopping" },
+          { time:"2:00 PM",  activity:"Saiho-ji (Moss Garden)", cat:"outdoor" },
+          { time:"6:30 PM",  activity:"Massage", cat:"booked" },
+          { time:"7:30 PM",  activity:"Shabu shabu", cat:"food" },
+        ]},
+        { city:"Nara", area:"", date:"Sun Apr 5", entries:[
+          { time:"9:30 AM",  activity:"Kofukuji", cat:"outdoor" },
+          { time:"10:00 AM", activity:"Himuro Shrine — sakura in bloom", cat:"outdoor" },
+          { time:"10:30 AM", activity:"Buddhist Art library", cat:"indoor" },
+          { time:"11:30 AM", activity:"Ukimido shrine", cat:"outdoor" },
+          { time:"1:30 PM",  activity:"Shin Yakushiji", cat:"indoor" },
+          { time:"3:00 PM",  activity:"Isuien Garden", cat:"outdoor" },
+          { time:"4:30 PM",  activity:"Yoshiken Garden", cat:"outdoor" },
+          { time:"6:00 PM",  activity:"Train to Nara", cat:"travel" },
+        ]},
+        { city:"Nara", area:"Yoshino", date:"Mon Apr 6", entries:[
+          { time:"9:30 AM",  activity:"Train to Yoshino", cat:"travel" },
+          { time:"11:00 AM", activity:"Yoshino day — cherry blossoms", cat:"outdoor" },
+          { time:"6:00 PM",  activity:"Train to Nara", cat:"travel" },
+        ]},
+        { city:"Osaka", area:"", date:"Tue Apr 7", entries:[
+          { time:"9:00 AM",  activity:"Nara National Museum", cat:"indoor" },
+          { time:"10:30 AM", activity:"Train to Osaka", cat:"travel" },
+          { time:"5:30 PM",  activity:"Yakitori Ichimatsu", cat:"food" },
+          { time:"6:30 PM",  activity:"Samurai, Aikido, Haruta shoes, Makers Shirts", cat:"shopping" },
+          { time:"7:00 PM",  activity:"Dinner — Korean, Yakiniku, Shabu Shabu", cat:"food" },
+          { time:"9:00 PM",  activity:"Umeda Sky building", cat:"outdoor" },
+          { time:"10:00 PM", activity:"Takoyaki dinner / snack", cat:"food" },
+        ]},
+        { city:"Osaka", area:"Namba · Shitennoji", date:"Wed Apr 8", entries:[
+          { time:"9:30 AM",  activity:"Ukiyoe Museum / Namba Shrine / Shitennoji", cat:"indoor" },
+          { time:"1:00 PM",  activity:"Get to lunch", cat:"travel" },
+          { time:"2:30 PM",  activity:"Tonkatsu Koshiro", cat:"food" },
+          { time:"3:00 PM",  activity:"Travel to chopstick class", cat:"travel" },
+          { time:"3:30 PM",  activity:"Chopstick making class", cat:"booked" },
+          { time:"5:00 PM",  activity:"Osaka Mint Museum & Cherry Blossom Tunnel", cat:"outdoor" },
+          { time:"6:30 PM",  activity:"Electronics shopping", cat:"shopping" },
+          { time:"7:30 PM",  activity:"Dinner — Hanjyu Sukiyaki", cat:"food" },
+        ]},
+        { city:"Osaka", area:"", date:"Thu Apr 9", entries:[
+          { time:"9:30 AM",  activity:"Aquarium", cat:"indoor" },
+          { time:"1:00 PM",  activity:"Lunch", cat:"food" },
+          { time:"6:30 PM",  activity:"Go to Tomo", cat:"travel" },
+          { time:"7:00 PM",  activity:"Dinner at restaurant", cat:"food" },
+        ]},
+        { city:"Osaka", area:"", date:"Fri Apr 10", entries:[
+          { time:"9:30 AM",  activity:"Osaka Castle & museum of history", cat:"outdoor" },
+          { time:"11:30 AM", activity:"Ajinoya Horten — Okonomiyaki", cat:"food" },
+          { time:"1:00 PM",  activity:"Leather shop", cat:"shopping" },
+          { time:"5:00 PM",  activity:"Go to hotel to change", cat:"travel" },
+          { time:"7:00 PM",  activity:"Minoh Waterfall (and Katsuoji?)", cat:"outdoor" },
+          { time:"7:30 PM",  activity:"Dinner at restaurant", cat:"food" },
+          { time:"10:30 PM", activity:"Hajime", cat:"booked" },
+        ]},
+        { city:"Osaka", area:"", date:"Sat Apr 11", entries:[
+          { time:"7:00 AM",  activity:"Shokoku-ji", cat:"outdoor" },
+          { time:"5:00 PM",  activity:"Flight to LHR", cat:"travel" },
+        ]},
+        { city:"KIX", area:"Airport", date:"Sun Apr 12", entries:[
+          { time:"10:30 AM", activity:"Tofuku-ji", cat:"outdoor" },
+          { time:"4:00 PM",  activity:"Flight to LHR", cat:"travel" },
+        ]},
       ]},
   ];
 
@@ -1287,23 +1608,119 @@
     { name:"Sosban",                          city:"Anglesey",        date:"May 2026" },
   ];
 
+  /* ── CITY ITINERARY RENDERER ── */
+  const CAT_LABELS = { food:"Food", travel:"Travel", outdoor:"Outdoor", indoor:"Indoor", booked:"Booked", shopping:"Shopping" };
+  const CITY_BG = {
+    "Tokyo":  "linear-gradient(135deg,#0d1520 0%,#1a2640 100%)",
+    "Kyoto":  "linear-gradient(135deg,#1e0e08 0%,#3e2010 100%)",
+    "Nara":   "linear-gradient(135deg,#0a1a10 0%,#1a3a20 100%)",
+    "Osaka":  "linear-gradient(135deg,#1e0818 0%,#3a1030 100%)",
+    "KIX":    "linear-gradient(135deg,#0e1418 0%,#1e2830 100%)",
+  };
+
+  function renderCityItinerary(j) {
+    const days = j.days;
+    // Group days by city
+    const groups = [];
+    days.forEach(day => {
+      const last = groups[groups.length - 1];
+      if (last && last.city === day.city) { last.days.push(day); }
+      else { groups.push({ city: day.city, days: [day] }); }
+    });
+
+    const usedCats = [...new Set(days.flatMap(d => (d.entries||[]).map(e => e.cat)))].filter(Boolean);
+    const legend = usedCats.map(c => `
+      <span class="itin-cat-pill">
+        <span class="itin-cat-dot cat-${c}"></span>${CAT_LABELS[c]||c}
+      </span>`).join('');
+
+    const sections = groups.map(g => {
+      const first = g.days[0].date, last = g.days[g.days.length-1].date;
+      const n = g.days.length;
+      const bg = CITY_BG[g.city] || "linear-gradient(135deg,#1c1c1c,#2a2a2a)";
+      const cards = g.days.map(day => `
+        <div class="itin-day-card">
+          <div class="itin-day-card-head">
+            <span class="itin-day-card-date">${day.date}</span>
+            ${day.area ? `<span class="itin-day-card-area">${day.area}</span>` : ''}
+          </div>
+          <div class="itin-day-card-body">
+            ${(day.entries||[]).map(e => `
+              <div class="itin-entry">
+                <div class="itin-entry-bar cat-${e.cat||'travel'}"></div>
+                <div class="itin-entry-time">${e.time}</div>
+                <div class="itin-entry-name">${e.activity}</div>
+              </div>`).join('')}
+          </div>
+        </div>`).join('');
+
+      return `
+        <div class="itin-city-section">
+          <div class="itin-city-banner" style="background:${bg}">
+            <div class="itin-city-banner-content">
+              <div class="itin-city-name">${g.city}</div>
+              <div class="itin-city-dates">${first}${n > 1 ? ' — ' + last : ''}</div>
+            </div>
+            <div class="itin-city-nights">${n}<span>night${n!==1?'s':''}</span></div>
+          </div>
+          <div class="itin-days-cards">${cards}</div>
+        </div>`;
+    }).join('');
+
+    return `<div class="itin-city-wrap">
+      <div class="itin-cat-legend">${legend}</div>
+      ${sections}
+    </div>`;
+  }
+
   /* ── MODAL INTERACTION LOGIC ── */
   const modal   = document.getElementById("itin-modal");
-  const backdrop= modal.querySelector(".itin-backdrop");
   const closeBtn= modal.querySelector(".itin-close");
 
   function openModal(j) {
     document.getElementById("itin-hero").style.background = j.gradient;
     document.getElementById("itin-eyebrow").textContent = j.region + " · " + j.year;
     document.getElementById("itin-title").textContent   = j.title;
-    
+
     const stopsList = j.stops || [];
     const who = j.travelers === "Both" ? "Troy & Hannah" : j.travelers;
     document.getElementById("itin-meta").textContent = who + " · " + stopsList.length + " stop" + (stopsList.length !== 1 ? "s" : "");
 
+    // Gallery tab
+    const galleryEl = document.getElementById("itin-gallery");
+    if (j.photos && j.photos.length) {
+      galleryEl.innerHTML = j.photos.map(url => `
+        <div class="itin-gallery-item"><img src="${url}" alt="${j.title}" loading="lazy"></div>`).join("");
+    } else {
+      galleryEl.innerHTML = Array(6).fill(0).map(() => `
+        <div class="itin-gallery-item">
+          <div class="itin-gallery-placeholder">
+            <svg width="34" height="34" viewBox="0 0 32 32" fill="none"><rect x="2" y="2" width="28" height="28" rx="1" stroke="currentColor" stroke-width="1.5" stroke-dasharray="3 2"/><circle cx="11" cy="12" r="3" stroke="currentColor" stroke-width="1.5"/><path d="M2 22l7-6 5 5 4-4 12 9" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg>
+            <span>Coming soon</span>
+          </div>
+        </div>`).join("");
+    }
+
+    // Itinerary tab
+    const ititinEl = document.getElementById("itin-itinerary-content");
+    if (j.days && j.days.length) {
+      ititinEl.innerHTML = renderCityItinerary(j);
+    } else {
+      ititinEl.innerHTML = `
+        <div class="itin-itin-wrap">
+          <div class="itin-placeholder">
+            <div class="itin-placeholder-rule"></div>
+            <p class="itin-placeholder-title">Day by Day</p>
+            <p class="itin-placeholder-sub">Detailed itinerary coming soon</p>
+            <div class="itin-placeholder-rule"></div>
+          </div>
+        </div>`;
+    }
+
+    // Stops / timeline tab
     const tl = document.getElementById("itin-timeline");
-    if(stopsList.length === 0) {
-      tl.innerHTML = `<p style="font-family:var(--fs-sans); font-size:0.8rem; color:#888; text-align:center; padding: 2rem 0;">Detailed itinerary stops coming soon!</p>`;
+    if (stopsList.length === 0) {
+      tl.innerHTML = `<p style="font-family:var(--fs-sans); font-size:0.8rem; color:#888; text-align:center; padding: 2rem 0;">Detailed stops coming soon!</p>`;
     } else {
       tl.innerHTML = stopsList.map(s => {
         const hasDates = s.entry && s.exit;
@@ -1325,6 +1742,11 @@
       }).join("");
     }
 
+    // Default to Journey tab (has data); switch to Gallery if photos exist
+    const defaultTab = (j.photos && j.photos.length) ? "gallery" : "stops";
+    modal.querySelectorAll(".itin-tab-btn").forEach(b => b.classList.toggle("active", b.dataset.panel === defaultTab));
+    modal.querySelectorAll(".itin-tab-panel").forEach(p => p.classList.toggle("active", p.id === "itin-panel-" + defaultTab));
+
     modal.setAttribute("aria-hidden","false");
     modal.classList.add("open");
     document.body.style.overflow = "hidden";
@@ -1337,9 +1759,18 @@
     document.body.style.overflow = "";
   }
 
-  backdrop.addEventListener("click", closeModal);
   closeBtn.addEventListener("click", closeModal);
   document.addEventListener("keydown", e => { if (e.key === "Escape") closeModal(); });
+
+  modal.querySelectorAll(".itin-tab-btn").forEach(btn => {
+    btn.addEventListener("click", () => {
+      modal.querySelectorAll(".itin-tab-btn").forEach(b => b.classList.remove("active"));
+      modal.querySelectorAll(".itin-tab-panel").forEach(p => p.classList.remove("active"));
+      btn.classList.add("active");
+      document.getElementById("itin-panel-" + btn.dataset.panel).classList.add("active");
+      modal.querySelector(".itin-body").scrollTop = 0;
+    });
+  });
 
   /* ── RENDER JOURNEYS ── */
   function renderJourneys(filter) {
