@@ -876,7 +876,65 @@
       font-size: .58rem; letter-spacing: .1em; color: #bbb; margin-top: .2rem;
     }
 
+    /* ── TIMELINE ── */
+    .tl-wrap { position: relative; padding: 2rem 0 3rem; }
+    .tl-spine {
+      position: absolute; left: 50%; top: 0; bottom: 0;
+      width: 2px; background: rgba(180,154,108,.25); transform: translateX(-50%);
+    }
+    .tl-node {
+      display: grid; grid-template-columns: 1fr 80px 1fr;
+      align-items: center; padding: .5rem 0;
+    }
+    .tl-hub { grid-column: 2; display: flex; flex-direction: column; align-items: center; z-index: 2; }
+    .tl-year {
+      font-family: var(--fs-serif); font-size: 1.05rem; font-weight: 400;
+      color: var(--gold); text-align: center; line-height: 1; min-height: 1.2em;
+    }
+    .tl-dot {
+      width: 11px; height: 11px; border-radius: 50%;
+      border: 2px solid var(--gold); background: var(--cream);
+      margin-top: .3rem; flex-shrink: 0;
+    }
+    .tl-card {
+      padding: .5rem .7rem; cursor: pointer;
+      transition: transform .18s;
+    }
+    .tl-card:hover { transform: translateY(-2px); }
+    .tl-card.tl-left  { grid-column: 1; text-align: right; }
+    .tl-card.tl-right { grid-column: 3; }
+    .tl-card-inner { display: flex; gap: .75rem; align-items: center; }
+    .tl-card.tl-left .tl-card-inner { flex-direction: row-reverse; }
+    .tl-thumb {
+      width: 70px; height: 54px; border-radius: 2px;
+      flex-shrink: 0; overflow: hidden;
+    }
+    .tl-thumb img  { width: 100%; height: 100%; object-fit: cover; }
+    .tl-thumb-grad { width: 100%; height: 100%; }
+    .tl-card-title {
+      font-family: var(--fs-serif); font-size: .98rem;
+      font-weight: 400; line-height: 1.2; margin-bottom: .18rem;
+    }
+    .tl-card-dest {
+      font-family: var(--fs-sans); font-size: .58rem;
+      letter-spacing: .1em; color: var(--gold); text-transform: uppercase;
+    }
+    .tl-card-who {
+      font-family: var(--fs-sans); font-size: .56rem;
+      color: #aaa; margin-top: .12rem;
+    }
+    .tl-milestone-row { grid-column: 1 / -1; text-align: center; padding: .5rem 0; }
+    .tl-milestone-label {
+      display: inline-block; font-family: var(--fs-sans);
+      font-size: .62rem; letter-spacing: .18em; text-transform: uppercase;
+      color: var(--gold); border: 1px solid rgba(180,154,108,.4);
+      padding: .25rem .9rem;
+    }
+
     @media (max-width: 768px) {
+      .tl-node { grid-template-columns: 1fr 60px 1fr; }
+      .tl-thumb { width: 50px; height: 40px; }
+      .tl-card-title { font-size: .88rem; }
       nav { padding: 1rem 1.5rem; }
       .nav-links { display: none; }
       .stats-row { gap: 2rem; }
@@ -898,6 +956,7 @@
   <ul class="nav-links">
     <li><a href="#world">World</a></li>
     <li><a href="#journeys">Journeys</a></li>
+    <li><a href="#timeline">Timeline</a></li>
     <li><a href="#dining">Dining</a></li>
     <li><a href="#countries">Countries</a></li>
   </ul>
@@ -1041,6 +1100,15 @@
     </div>
 </section>
 
+<section id="timeline">
+  <div class="container">
+    <p class="section-eyebrow fade-up">Since 1999</p>
+    <h2 class="section-title fade-up">A Life <em>Well</em> Travelled</h2>
+    <p class="section-desc fade-up">Every journey on a single spine — 1999 to today.</p>
+    <div class="tl-wrap fade-up" id="timeline-container"></div>
+  </div>
+</section>
+
 <div id="lightbox">
   <button id="lightbox-close" aria-label="Close">&times;</button>
   <img id="lightbox-img" src="" alt="" />
@@ -1108,7 +1176,7 @@
   }
 
   const journeys = [
-    { year:1999, title:"Italian Beginnings", region:"Europe", filter:"europe", destinations:["Italy","Slovenia","Switzerland"], travelers:"Troy", gradient:"linear-gradient(135deg,#2c3e50,#3d6e5e)",
+    { year:1999, title:"Italian Beginnings", region:"Europe", filter:"europe", destinations:["Italy","Slovenia","Switzerland"], travelers:"Troy", gradient:"linear-gradient(135deg,#2c3e50,#3d6e5e)", milestone:"where it all began",
       stops:[
         {country:"Italy",    entry:"06/30/1999", exit:"07/31/1999", who:"Troy"},
         {country:"Slovenia", entry:"07/15/1999", exit:"07/15/1999", who:"Troy"},
@@ -1137,7 +1205,7 @@
         {country:"Cambodia",   entry:"12/12/2012", exit:"12/18/2012", who:"Troy"},
         {country:"Vietnam",    entry:"12/18/2012", exit:"12/23/2012", who:"Troy"},
       ]},
-    { year:2013, title:"Caribbean Grand Voyage", region:"Americas", filter:"americas", destinations:["Puerto Rico","Barbados","St. Lucia","St. Kitts","St. Martin","Mexico"], travelers:"Both", gradient:"linear-gradient(135deg,#1488cc,#2b5876)",
+    { year:2013, title:"Caribbean Grand Voyage", region:"Americas", filter:"americas", destinations:["Puerto Rico","Barbados","St. Lucia","St. Kitts","St. Martin","Mexico"], travelers:"Both", gradient:"linear-gradient(135deg,#1488cc,#2b5876)", milestone:"our first big trip together",
       stops:[
         {country:"Puerto Rico",               entry:"7/4/2013",  exit:"7/7/2013",  who:"Both"},
         {country:"St. Thomas (US VI)",        entry:"7/8/2013",  exit:"7/8/2013",  who:"Both"},
@@ -1306,7 +1374,7 @@
         {country:"Switzerland",  entry:"10/28/2023", exit:"10/29/2023", who:"Both"},
         {country:"Slovenia",     entry:"11/2/2023",  exit:"11/5/2023",  who:"Both"},
       ]},
-    { year:"2023–24", title:"Oman & the Maldives", region:"Africa", filter:"africa", destinations:["Oman","Maldives"], travelers:"Both", gradient:"linear-gradient(135deg,#00b4db,#0083b0)",
+    { year:"2023–24", title:"Oman & the Maldives", region:"Africa", filter:"africa", destinations:["Oman","Maldives"], travelers:"Both", gradient:"linear-gradient(135deg,#00b4db,#0083b0)", milestone:"25 years of travels",
       stops:[
         {country:"Oman",     entry:"12/16/2023", exit:"12/23/2023", who:"Both"},
         {country:"Maldives", entry:"12/23/2023", exit:"12/31/2023", who:"Both"},
@@ -1375,7 +1443,7 @@
       stops:[
         {country:"Costa Rica", entry:"12/20/2025", exit:"1/3/2026", who:"Both"},
       ]},
-    { year:2026, title:"Japan — Spring Edition", region:"Asia", filter:"asia", destinations:["Japan","Osaka","Kyoto","Tokyo"], travelers:"Both", gradient:"linear-gradient(135deg,#f7971e,#ffd200)",
+    { year:2026, title:"Japan — Spring Edition", region:"Asia", filter:"asia", destinations:["Japan","Osaka","Kyoto","Tokyo"], travelers:"Both", gradient:"linear-gradient(135deg,#f7971e,#ffd200)", milestone:"latest entry",
       stops:[
         {country:"Japan", entry:"3/28/2026", exit:"4/12/2026", who:"Both"},
       ],
@@ -1912,6 +1980,73 @@
     observeFadeUps();
   }
 
+  /* ── RENDER TIMELINE ── */
+  function renderTimeline() {
+    const container = document.getElementById("timeline-container");
+    if (!container) return;
+
+    let html = '<div class="tl-spine"></div>';
+    let lastYear = null;
+
+    journeys.forEach((j, i) => {
+      const side = i % 2 === 0 ? "tl-left" : "tl-right";
+      const startYear = parseInt(String(j.year));
+      const showYear  = startYear !== lastYear;
+      if (showYear) lastYear = startYear;
+
+      // Thumbnail: use first photo if available, else gradient block
+      let thumbContent;
+      if (j.photos && j.photos.length) {
+        const p   = j.photos[0];
+        const src = typeof p === "string" ? p : (p.thumb || p.src);
+        thumbContent = `<img src="${src}" alt="${j.title}" loading="lazy">`;
+      } else {
+        thumbContent = `<div class="tl-thumb-grad" style="background:${j.gradient}"></div>`;
+      }
+
+      const who  = j.travelers === "Both" ? "Troy & Hannah" : j.travelers;
+      const dest = j.destinations.slice(0, 2).join(" · ");
+
+      const hub = `<div class="tl-hub">
+        <div class="tl-year">${showYear ? j.year : ''}</div>
+        <div class="tl-dot"></div>
+      </div>`;
+
+      const card = `<div class="tl-card ${side}" data-journey-idx="${i}">
+        <div class="tl-card-inner">
+          <div class="tl-thumb">${thumbContent}</div>
+          <div class="tl-card-body">
+            <div class="tl-card-title">${j.title}</div>
+            <div class="tl-card-dest">${dest}</div>
+            <div class="tl-card-who">${who}</div>
+          </div>
+        </div>
+      </div>`;
+
+      const empty = `<div></div>`;
+      html += `<div class="tl-node">
+        ${side === "tl-left"  ? card  : empty}
+        ${hub}
+        ${side === "tl-right" ? card  : empty}
+      </div>`;
+
+      if (j.milestone) {
+        html += `<div class="tl-node">
+          <div class="tl-milestone-row">
+            <span class="tl-milestone-label">${j.milestone}</span>
+          </div>
+        </div>`;
+      }
+    });
+
+    container.innerHTML = html;
+
+    container.addEventListener("click", e => {
+      const card = e.target.closest("[data-journey-idx]");
+      if (card) openModal(journeys[parseInt(card.dataset.journeyIdx)]);
+    });
+  }
+
   /* ── RENDER RESTAURANTS ── */
   function renderRestaurants(list, gridId, stars) {
     const grid = document.getElementById(gridId);
@@ -2222,6 +2357,7 @@
 
   setTimeout(animateCounters, 600);
   renderJourneys("all");
+  renderTimeline();
   renderRestaurants(threeStars, "grid-three", 3);
   renderRestaurants(twoStars, "grid-two", 2);
   renderRestaurants(oneStars, "grid-one", 1);
