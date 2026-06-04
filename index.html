@@ -64,6 +64,13 @@
       transition: color .2s;
     }
     .nav-links a:hover { color: var(--gold); }
+    .nav-indicator {
+      position: absolute; bottom: -2px; left: 0;
+      height: 2px; background: var(--gold);
+      transition: left 0.4s ease, width 0.3s ease;
+      opacity: 0;
+    }
+    nav:not(.hero-scrolled) .nav-indicator { opacity: 1; }
 
     /* ── HERO ── */
     #hero {
@@ -221,6 +228,15 @@
       border: 1px solid rgba(180,154,108,.2);
     }
     .map-wrap svg { display: block; width: 100%; height: auto; }
+    #map-caption {
+      position: absolute; top: -35px; left: 50%; transform: translateX(-50%);
+      opacity: 0; pointer-events: none;
+      font-family: var(--fs-serif); font-style: italic;
+      font-size: 0.95rem; color: var(--gold);
+      white-space: nowrap;
+      transition: opacity 0.2s;
+      z-index: 10;
+    }
 
     .continents-legend {
       display: flex; flex-wrap: wrap; justify-content: center; gap: 1.2rem;
@@ -674,6 +690,19 @@
       transition: color .2s;
     }
     #lightbox-close:hover { color: #fff; }
+    #loupe {
+      position: fixed; display: none;
+      width: 200px; height: 200px;
+      border: 2px solid var(--gold);
+      border-radius: 50%;
+      clip-path: circle(100px);
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      pointer-events: none;
+      z-index: 9999;
+    }
+    #loupe.active { display: block; }
     .itin-gallery-placeholder {
       display: flex; flex-direction: column; align-items: center; justify-content: center;
       height: 100%; gap: .7rem;
@@ -872,6 +901,7 @@
     <li><a href="#dining">Dining</a></li>
     <li><a href="#countries">Countries</a></li>
   </ul>
+  <span class="nav-indicator"></span>
 </nav>
 
 <section id="hero">
@@ -921,7 +951,10 @@
       <div class="continent-pill"><span style="background:#b49a6c"></span> Visited</div>
       <div class="continent-pill"><span style="background:#2a3f52"></span> Not Yet</div>
     </div>
-    <div id="world-map" style="width: 100%; height: 500px; margin-top: 30px; margin-bottom: 30px;"></div>
+    <div style="position: relative;">
+      <div id="map-caption"></div>
+      <div id="world-map" style="width: 100%; height: 500px; margin-top: 30px; margin-bottom: 30px;"></div>
+    </div>
   </div>
 </section>
 
@@ -1012,6 +1045,7 @@
   <button id="lightbox-close" aria-label="Close">&times;</button>
   <img id="lightbox-img" src="" alt="" />
 </div>
+<div id="loupe"></div>
 
 <div id="itin-modal" class="itin-modal" aria-modal="true" role="dialog" aria-hidden="true">
   <div class="itin-backdrop"></div>
@@ -1929,6 +1963,78 @@
     `).join("");
   }
 
+  /* ── WHIMSY: NAV INDICATOR ── */
+  function updateNavIndicator(activeId) {
+    const indicator = document.querySelector(".nav-indicator");
+    if (!activeId || activeId === "hero") {
+      indicator.style.opacity = "0";
+      return;
+    }
+    const link = document.querySelector(`a[href="#${activeId}"]`);
+    if (link) {
+      indicator.style.left = (link.offsetLeft) + "px";
+      indicator.style.width = link.offsetWidth + "px";
+      indicator.style.opacity = "1";
+    }
+  }
+
+  /* ── WHIMSY: ODOMETER ROLL ── */
+  let odometRolling = false;
+  function rollOdometer() {
+    if (odometRolling) return;
+    odometRolling = true;
+    const el = document.querySelector('[data-count="90"]');
+    const original = 90;
+    const steps = [
+      Math.floor(Math.random() * 40 + 60),
+      Math.floor(Math.random() * 40 + 60),
+      Math.floor(Math.random() * 40 + 80)
+    ];
+    let idx = 0;
+    const rollStep = () => {
+      if (idx < steps.length) {
+        el.textContent = steps[idx];
+        idx++;
+        setTimeout(rollStep, 150);
+      } else {
+        el.textContent = original;
+        odometRolling = false;
+      }
+    };
+    rollStep();
+  }
+
+  /* ── WHIMSY: PHOTO LOUPE ── */
+  let loupeActive = false;
+  let loupeTimeout = null;
+  const loupe = document.getElementById("loupe");
+  function activateLoupe(img) {
+    loupeActive = true;
+    loupe.classList.add("active");
+    loupe.style.backgroundImage = `url(${img.dataset.full})`;
+    document.addEventListener("mousemove", updateLoupePosition);
+    function updateLoupePosition(e) {
+      if (!loupeActive) {
+        document.removeEventListener("mousemove", updateLoupePosition);
+        return;
+      }
+      const rect = img.getBoundingClientRect();
+      const x = e.clientX - 100;
+      const y = e.clientY - 100;
+      loupe.style.left = x + "px";
+      loupe.style.top = y + "px";
+      const zoomLevel = 2;
+      const offsetX = ((e.clientX - rect.left) * zoomLevel) - 100;
+      const offsetY = ((e.clientY - rect.top) * zoomLevel) - 100;
+      loupe.style.backgroundSize = (rect.width * zoomLevel) + "px auto";
+      loupe.style.backgroundPosition = (-offsetX) + "px " + (-offsetY) + "px";
+    }
+  }
+  function deactivateLoupe() {
+    loupeActive = false;
+    loupe.classList.remove("active");
+  }
+
   /* ── EVENT LISTENERS FOR CONTROLS ── */
   document.querySelectorAll(".filter-btn").forEach(btn => {
     btn.addEventListener("click", () => {
@@ -1950,6 +2056,40 @@
   const nav = document.getElementById("nav");
   window.addEventListener("scroll", () => {
     nav.classList.toggle("scrolled", window.scrollY > 60);
+    // Whimsy: Update nav indicator based on active section
+    const sections = ["world", "journeys", "dining", "countries"];
+    let activeSection = "hero";
+    for (const sectionId of sections) {
+      const section = document.getElementById(sectionId);
+      if (section && section.getBoundingClientRect().top < 150) {
+        activeSection = sectionId;
+      }
+    }
+    updateNavIndicator(activeSection);
+  });
+
+  // Whimsy: Odometer hover on journey count
+  const journeyCount = document.querySelector('[data-count="90"]');
+  if (journeyCount && journeyCount.closest(".stat")) {
+    journeyCount.closest(".stat").addEventListener("mouseenter", rollOdometer);
+  }
+
+  // Whimsy: Loupe on gallery photos
+  document.addEventListener("mousedown", (e) => {
+    const img = e.target.closest(".itin-gallery-item")?.querySelector("img");
+    if (img) {
+      loupeTimeout = setTimeout(() => {
+        activateLoupe(img);
+      }, 400);
+    }
+  });
+  document.addEventListener("mouseup", () => {
+    clearTimeout(loupeTimeout);
+    deactivateLoupe();
+  });
+  document.addEventListener("mouseleave", () => {
+    clearTimeout(loupeTimeout);
+    deactivateLoupe();
   });
 
   /* ── HERO COUNTER ANIMATION ── */
@@ -2045,6 +2185,36 @@
   // Hover effect state
   worldSeries.mapPolygons.template.states.create("hover", {
     fill: am5.color(0xd4b896)
+  });
+
+  /* ── WHIMSY: MAP CAPTION ── */
+  const mapCaption = document.getElementById("map-caption");
+  let captionTimeout = null;
+  function countryCodeToEmoji(code) {
+    if (!code || code.length !== 2) return "";
+    const codePoints = code
+      .toUpperCase()
+      .split("")
+      .map(c => 0x1f1e6 - 65 + c.charCodeAt(0));
+    return String.fromCodePoint(...codePoints);
+  }
+  worldSeries.mapPolygons.each((polygon) => {
+    polygon.events.on("pointerover", () => {
+      clearTimeout(captionTimeout);
+      const data = polygon.dataItem?.dataContext;
+      if (data && data.name) {
+        const code = polygon.dataItem?.get("id")?.split("-").pop() || "";
+        const emoji = countryCodeToEmoji(code);
+        mapCaption.textContent = (emoji ? emoji + " " : "") + data.name;
+        captionTimeout = setTimeout(() => {
+          mapCaption.style.opacity = "1";
+        }, 200);
+      }
+    });
+    polygon.events.on("pointerout", () => {
+      clearTimeout(captionTimeout);
+      mapCaption.style.opacity = "0";
+    });
   });
 
   chart.set("zoomControl", am5map.ZoomControl.new(root, {}));
