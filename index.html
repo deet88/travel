@@ -1388,7 +1388,6 @@
           { time:"9:00 AM",  activity:"Kiyomizudera", cat:"outdoor" },
           { time:"10:30 AM", activity:"Okazaki Park", cat:"outdoor" },
           { time:"12:00 PM", activity:"Philosopher Path / Ginkaku-ji", cat:"outdoor" },
-          { time:"1:00 PM",  activity:"Saiho-ji (Moss Garden)", cat:"booked" },
           { time:"7:00 PM",  activity:"Dinner at hotel — Kaiseki", cat:"booked" },
         ]},
         { city:"Kyoto", area:"South", date:"Sat Apr 4", entries:[
@@ -1450,13 +1449,29 @@
         ]},
         { city:"Osaka", area:"", date:"Sat Apr 11", entries:[
           { time:"7:00 AM",  activity:"Shokoku-ji", cat:"outdoor" },
-          { time:"5:00 PM",  activity:"Flight to LHR", cat:"travel" },
         ]},
         { city:"KIX", area:"Airport", date:"Sun Apr 12", entries:[
           { time:"10:30 AM", activity:"Tofuku-ji", cat:"outdoor" },
           { time:"4:00 PM",  activity:"Flight to LHR", cat:"travel" },
         ]},
-      ]},
+      ],
+      photos:[
+        "photos/japan-2026/PXL_20260328_031912174.jpg",
+        "photos/japan-2026/PXL_20260329_061655835.jpg",
+        "photos/japan-2026/PXL_20260401_062239462.jpg",
+        "photos/japan-2026/PXL_20260402_005620171.jpg",
+        "photos/japan-2026/PXL_20260402_212440618.jpg",
+        "photos/japan-2026/PXL_20260403_003206958.jpg",
+        { src:"photos/japan-2026/PXL_20260405_055822085.jpg", thumb:"photos/japan-2026/PXL_20260405_055822085_thumb.jpg" },
+        "photos/japan-2026/PXL_20260406_035449334.jpg",
+        { src:"photos/japan-2026/PXL_20260407_044012266.jpg", pos:"top" },
+        "photos/japan-2026/PXL_20260407_085420473.jpg",
+        "photos/japan-2026/PXL_20260408_075624823.jpg",
+        "photos/japan-2026/PXL_20260410_024622381.jpg",
+        { src:"photos/japan-2026/PXL_20260410_065751818.jpg", pos:"top" },
+        { src:"photos/japan-2026/PXL_20260411_015620387.jpg", pos:"top" },
+      ],
+    },
   ];
 
   const threeStars = [
@@ -1689,8 +1704,12 @@
     // Gallery tab
     const galleryEl = document.getElementById("itin-gallery");
     if (j.photos && j.photos.length) {
-      galleryEl.innerHTML = j.photos.map(url => `
-        <div class="itin-gallery-item"><img src="${url}" alt="${j.title}" loading="lazy"></div>`).join("");
+      galleryEl.innerHTML = j.photos.map(p => {
+        const src   = typeof p === "string" ? p : p.src;
+        const thumb = typeof p === "object" && p.thumb ? p.thumb : src;
+        const pos   = typeof p === "object" && p.pos   ? p.pos   : "center";
+        return `<div class="itin-gallery-item"><img src="${thumb}" data-full="${src}" alt="${j.title}" loading="lazy" style="object-position:${pos}"></div>`;
+      }).join("");
     } else {
       galleryEl.innerHTML = Array(6).fill(0).map(() => `
         <div class="itin-gallery-item">
