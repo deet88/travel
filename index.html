@@ -731,6 +731,7 @@
     
 
     <div class="continents-legend fade-up">
+      <div class="continent-pill"><span style="background:#cd7f32"></span> Lived</div>
       <div class="continent-pill"><span style="background:#b49a6c"></span> Visited</div>
       <div class="continent-pill"><span style="background:#2a3f52"></span> Not Yet</div>
     </div>
@@ -1343,7 +1344,9 @@
   /* ── RENDER JOURNEYS ── */
   function renderJourneys(filter) {
     const grid = document.getElementById("journeys-grid");
-    const filtered = filter === "all" ? journeys : journeys.filter(j => j.filter === filter);
+    const filtered = (filter === "all" ? journeys : journeys.filter(j => j.filter === filter))
+      .slice()
+      .reverse();
     grid.innerHTML = filtered.map((j) => `
       <div class="journey-card fade-up" data-journey-idx="${journeys.indexOf(j)}">
         <div class="journey-card-header">
@@ -1487,47 +1490,17 @@
   /* ── INITIALIZATION ── */
 
   // Data arrays extracted from Countries Been screenshots
-  const regionsLived = ["GB", "JP", "US-CA", "US-NY"];
+  const regionsLived = ["GB", "JP", "US", "CN"];
   const regionsVisited = [
-    "US", "CA", "MX", "CO", "PE", "BZ", "GT", "DO", "PR", "BS", "JM", "TT", "KN", "LC", "VC", "GD", "AW", "CW",
-    "FR", "ES", "IT", "DE", "NL", "BE", "LU", "CH", "AT", "IE", "DK", "SE", "NO", "FI", "EE", "LV", "LT", "PL",
-    "CZ", "SK", "HU", "SI", "HR", "BA", "ME", "AL", "GR", "TR", "AD", "SM", "VA", "MT",
-    "EG", "TN", "MA", "KE", "TZ", "ZA", "MU", "QA", "JO", "IL",
+    "US", "CA", "MX", "CO", "PE", "EC", "BZ", "GT", "CR", "PA", "DO", "PR", "BS", "JM", "TT", "KN", "LC", "VC", "GD", "AW", "CW",
+    "FR", "ES", "PT", "IT", "DE", "NL", "BE", "LU", "CH", "AT", "IE", "DK", "SE", "NO", "FI", "EE", "LV", "LT", "PL",
+    "CZ", "SK", "HU", "SI", "HR", "BA", "ME", "AL", "TR", "AD", "SM", "VA", "MT",
+    "EG", "TN", "MA", "KE", "TZ", "ZA", "MU", "QA", "JO", "IL", "OM", "PS",
     "KG", "KZ", "UZ", "CN", "KR", "VN", "LA", "KH", "SG", "TW", "HK", "AU"
   ];
 
   // Create root element targeting the correct div
-  var root = am5.Root.new("world-map");
-
-  // Set themes
-  root.setThemes([am5themes_Animated.new(root)]);
-
-  // Create the map chart
-  var chart = root.container.children.push(am5map.MapChart.new(root, {
-    panX: "rotateX",
-    panY: "translateY",
-    projection: am5map.geoMercator(),
-    homeGeoPoint: { longitude: 10, latitude: 30 },
-    homeZoomLevel: 1
-  }));
-
-  // Create main polygon series for countries
-  var worldSeries = chart.series.push(am5map.MapPolygonSeries.new(root, {
-    geoJSON: am5geodata_worldLow,
-    exclude: ["AQ"]
-  }));
-
-  worldSeries.mapPolygons.template.setAll({
-    fill: am5.color(0x2a3f52),
-    stroke: am5.color(0x16232e),
-    strokeWidth: 0.5,
-    interactive: true,
-    templateField: "polygonSettings"
-  });
-/* ── INITIALIZATION ── */
-
-  // Create root element targeting the correct div
-  var root = am5.Root.new("world-map");
+  var mapDiv = document.getElementById("world-map"); if (mapDiv) mapDiv.innerHTML = ""; if (window._am5root) { window._am5root.dispose(); } var root = am5.Root.new("world-map"); window._am5root = root;
 
   // Set themes
   root.setThemes([am5themes_Animated.new(root)]);
